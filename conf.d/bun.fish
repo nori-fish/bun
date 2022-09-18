@@ -9,13 +9,16 @@ function _bun_install --on-event bun_install --on-event bun_update
     set --query BUN_INSTALL
     or set --universal --export BUN_INSTALL $HOME/.bun
 
-    _nori_add_path $BUN_INSTALL/bin
+    fish_add_path --prepend $BUN_INSTALL/bin
 end
 
 function _bun_uninstall --on-event bun_uninstall
+    if set --local index (contains --index $BUN_INSTALL/bin $fish_user_paths)
+        set --universal --erase fish_user_paths[$index]
+    end
+
     if set --query BUN_INSTALL
         rm -rf $BUN_INSTALL
         set -Ue BUN_INSTALL
     end
-    _nori_remove_path $BUN_INSTALL/bin
 end
